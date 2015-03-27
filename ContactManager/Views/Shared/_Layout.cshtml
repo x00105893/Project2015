@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - CCSE</title>
+    @Styles.Render("~/Content/css")
+
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Career Choices Starting Early</h1>
+            <p>A fun way for kids to learn about careers</p>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+               
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        </ul>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                    <a class="visible-xs navbar-brand" href="/index.html"><img src="images/CCSE.PNG" width="100" height="50" alt="Logo" /></a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav nav-pills nav-justified">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Resources", "Resources", "Home")</li>
+                        <li>@Html.ActionLink("A-Z Careers", "Azcareers", "Home")</li>
+                        <li>@Html.ActionLink("Education", "Education", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Admin", "Index", "Admin")</li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </nav>
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <div id="footer" class="navbar-default">
+                <div align="center">
+                    &copy; @DateTime.Now.Year - This site was created as a third year project by students from <a href="http://www.it-tallaght.ie/computing">IT Tallaght</a>
+                </div>
+            </div>
+        </div>
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+    </div>
+</body>
+</html>

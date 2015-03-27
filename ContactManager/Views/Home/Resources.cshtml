@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "Resources";
+}
+
+<h2>Resources</h2>
+<div class="row">
+    <div class="col-md-4">
+        <p>Documents</p>
+        <ul>
+            @foreach (var item in (ViewBag.Documents as IEnumerable<ContactManager.Models.Resource>))
+            {
+                <li>
+                    <h4>@Html.Raw(item.Title)</h4>
+                    <div>
+                        @Html.Raw(item.Description)
+                    </div>
+                    <div>
+                        @*<a href="@Url.Action("Download", "File", new { id = item.ID })" target="_blank">Download</a>*@
+                        <button type="button" onclick="Download(@item.ID)">Download</button>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <p>Video</p>
+        <ul>
+            @foreach (var item in (ViewBag.Video as IEnumerable<ContactManager.Models.Resource>))
+            {
+                <li>
+                    <h4>@Html.Raw(item.Title)</h4>
+                    <div>
+                        @Html.Raw(item.Description)
+                    </div>
+                    <div>
+                        @*<a href="@Url.Action("Download", "File", new { id = item.ID })" target="_blank">Download</a>*@
+                        <button type="button" onclick="Download(@item.ID)">Download</button>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <p>Images</p>
+        <ul>
+            @foreach (var item in (ViewBag.Images as IEnumerable<ContactManager.Models.Resource>))
+            {
+                <li>
+                    <h4>@Html.Raw(item.Title)</h4>
+                    <div>
+                        @Html.Raw(item.Description)
+                    </div>
+                    <div>
+                        @*<a href="@Url.Action("Download", "File", new { id = item.ID })" target="_blank">Download</a>*@
+                        <button type="button" onclick="Download(@item.ID)">Download</button>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<div id="dialog-message" title="Error">
+    <div id="message" class="dialog-message"></div>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#dialog-message").dialog({
+                resizable: false,
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+
+        function OpenDialog(text) {
+            $("#dialog-message #message").text(text);
+            $("#dialog-message").dialog("open");
+        }
+
+        function Download(id) {
+            //var a = "/File/Download?id=" + id;
+            //window.open(a, "_blank");
+            var iframe = $("<iframe/>").load(function () {
+                if ($(this).contents().find('body') && $(this).contents().find('body').text())
+                    OpenDialog($(this).contents().find('body').text())
+                else
+                {
+                    if(!isFirefox)
+                        OpenDialog('Error occured while file downloading.');
+                }
+            }).attr({
+                target: "_blank",
+                src: "/File/Download?id=" + id,
+                style: "display: none"
+            }).appendTo($('body'));
+        }
+    </script>
+}

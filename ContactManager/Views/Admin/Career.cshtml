@@ -1,0 +1,137 @@
+﻿@model ContactManager.Models.Career
+
+@{
+    ViewBag.Title = "Career";
+    int id = Model == null ? 0 : Model.ID;
+}
+
+<h2>Career</h2>
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index")">Admin</a></li>
+    <li><a href="@Url.Action("Careers")">Careers</a></li>
+    <li class="active">Edit Career</li>
+</ol>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
+        <input type="hidden" name="ID" value="@id" />
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Name, new { style="max-width:940px; width:940px" })
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Description, new { style="max-width:940px; max-height: 300px; width:940px; height: 150px" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WhatDo, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.WhatDo, new { @class = "ckeditor", id = "editor" })
+                @Html.ValidationMessageFor(model => model.WhatDo)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WhoHire, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.WhoHire, new { @class = "ckeditor" })
+                @Html.ValidationMessageFor(model => model.WhoHire)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.KeySkills, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.KeySkills, new { @class = "ckeditor" })
+                @Html.ValidationMessageFor(model => model.KeySkills)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CareerPath, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.CareerPath, new { @class = "ckeditor" })
+                @Html.ValidationMessageFor(model => model.CareerPath)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UseLinkForVideo, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UseLinkForVideo)
+                @Html.ValidationMessageFor(model => model.UseLinkForVideo)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Video", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model=>model.VideoLink, new { style="min-width:500px" })
+                @Html.DropDownList("VideoID", ViewBag.Video as IEnumerable<SelectListItem>, new { id = "videoId", style="width: 300px", @class="chosen" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Documents, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.ListBox("DocumentsID", ViewBag.Documents as MultiSelectList, new { @class="chosen" })
+            </div>
+        </div>
+        <div class="form-group">
+
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Career")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval", "~/bundles/ckeditor", "~/bundles/chosen")
+    <script>
+        $(document).ready(function () {
+            $(".chosen").chosen({ allow_single_deselect: true, width: "500px" });
+            $('.chosen-search').hide();
+
+            if ($("#UseLinkForVideo").attr("checked")) {
+                $("#VideoLink").show();
+                $("#videoId_chosen").hide();
+            }
+            else {
+                $("#VideoLink").hide();
+                $("#videoId_chosen").show();
+            }
+
+            
+            $("#UseLinkForVideo").change(function (s, e) {
+                if ($(this)[0].checked) {
+                    $("#VideoLink").show();
+                    $("#videoId_chosen").hide();
+                }
+                else {
+                    $("#VideoLink").hide();
+                    $("#videoId_chosen").show();
+                }
+            });
+        });
+    </script>
+}

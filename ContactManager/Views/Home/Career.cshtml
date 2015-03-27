@@ -1,0 +1,84 @@
+﻿@model ContactManager.Models.Career
+
+@{
+    ViewBag.Title = @Model.Name;
+}
+
+<h2>@Model.Name</h2>
+
+<div class="career">
+    <div class="row">
+        <div class="col-md-4">
+            <div>
+                <div>
+                    <h4 class="panel-heading">Documents</h4>
+                    @if (Model.Documents.Count() != 0)
+                    {
+                        <div class="panel-body">
+                            @foreach (var doc in Model.Documents)
+                            {
+                                <div>@Html.ActionLink(doc.Name, "Download", "File", routeValues: new { id = doc.ID }, htmlAttributes: new { })</div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="panel-body">No documents</p>
+                    }
+                </div>
+                <div>
+                    <h4 class="panel-heading">
+                        @Model.Name
+                    </h4>
+                    <div class="panel-body">
+                        @Model.Description
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div id="video"></div>
+        </div>
+    </div>
+    <div class="row">
+        <h4 class="panel-heading">What does he do?</h4>
+        <div class="col-md-12 panel-body">
+            @Html.Raw(Model.WhatDo)
+        </div>
+    </div>
+    <div class="row">
+        <h4 class="panel-heading">Who hire them?</h4>
+        <div class="col-md-12 panel-body">
+            @Html.Raw(Model.WhoHire)
+        </div>
+    </div>
+    <div class="row">
+        <h4 class="panel-heading">Key skills</h4>
+        <div class="col-md-12 panel-body">
+            @Html.Raw(Model.KeySkills)
+        </div>
+    </div>
+    <div class="row">
+        <h4 class="panel-heading">Career Path</h4>
+        <div class="col-md-12 panel-body">
+            @Html.Raw(Model.CareerPath)
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jwplayer")
+    <script>
+        $(document).ready(function () {
+            $("#video_logo").hide();
+        });
+        
+        jwplayer("video").setup({
+            file: "@ViewBag.Link",
+            image: "@ViewBag.Thumb",
+            width: 640,
+            height: 360
+        });
+    </script>
+}

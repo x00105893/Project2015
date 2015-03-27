@@ -1,0 +1,98 @@
+﻿@model ContactManager.Models.Resource
+
+@{
+    int id = Model == null ? 0 : Model.ID;
+}
+
+<h2>@ViewBag.Title</h2>
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index")">Admin</a></li>
+    <li><a href="@Url.Action("Resources", new { type = ViewBag.Type })">@ViewBag.Title</a></li>
+    <li class="active">Edit @ViewBag.Type</li>
+</ol>
+@using (Html.BeginForm("Resource", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Resource</legend>
+        <input type="hidden" name="Type" value="@ViewBag.Type" />
+        <input type="hidden" name="ID" value="@id" />
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Title)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Title)
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Name)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Name)
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Description)
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+
+        @if (Model != null && !String.IsNullOrEmpty(Model.RootPath) && Model.ID != 0)
+        {
+            @*@Html.ActionLink("Download", "Download", "File", routeValues: new { id = Model.ID }, htmlAttributes: new { })*@
+            <button type="button" onclick="Download(@Model.ID)">Download</button>
+        }
+
+        <div class="editor-field">
+            <input type="file" name="file" accept="@ViewBag.Accept"/>
+        </div>
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Resources", new { type = ViewBag.Type })
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval", "~/bundles/jqueryui")
+<script>
+    $(document).ready(function () {
+        $("#dialog-message").dialog({
+            resizable: false,
+            autoOpen: false,
+            modal: true,
+            buttons: {
+                Ok: function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    function OpenDialog(text) {
+        $("#dialog-message #message").text(text);
+        $("#dialog-message").dialog("open");
+    }
+
+    function Download(id) {
+        var iframe = $("<iframe/>").load(function () {
+            if ($(this).contents().find('body') && $(this).contents().find('body').text())
+                OpenDialog($(this).contents().find('body').text())
+            else
+                OpenDialog('Error occured while file downloading.');
+        }).attr({
+            target: "_blank",
+            src: "/File/Download?id=" + id,
+            style: "display: none"
+        }).appendTo($('body'));
+    }
+</script>
+}
