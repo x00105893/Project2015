@@ -16,7 +16,7 @@ namespace ContactManager.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         //
-        // GET: /Admin/
+        // GET: /Admin/test
         
         public ActionResult Index()
         {
