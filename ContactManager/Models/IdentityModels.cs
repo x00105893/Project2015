@@ -38,5 +38,8 @@ namespace ContactManager.Models
         public System.Data.Entity.DbSet<ContactManager.Models.Contact> Contacts { get; set; }
         public System.Data.Entity.DbSet<ContactManager.Models.Resource> Resources { get; set; }
         public System.Data.Entity.DbSet<ContactManager.Models.Career> Careers { get; set; }
+        public System.Data.Entity.DbSet<ContactManager.Models.Test> Tests { get; set; }
+        public System.Data.Entity.DbSet<ContactManager.Models.Question> Questions { get; set; }
+        public System.Data.Entity.DbSet<ContactManager.Models.QuestionOption> QuestionsOptions { get; set; }
     }
 }

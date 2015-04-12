@@ -224,6 +224,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Classes\CustomHandleErrorAttribute.cs" />
+    <Compile Include="Classes\Helpers.cs" />
     <Compile Include="Classes\Logger.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -250,7 +251,10 @@
     <Compile Include="Models\Contacts.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Question.cs" />
+    <Compile Include="Models\QuestionOption.cs" />
     <Compile Include="Models\Resource.cs" />
+    <Compile Include="Models\Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -354,6 +358,9 @@
     <Content Include="Scripts\ckeditor\ckeditor.php" />
     <Content Include="Scripts\ckeditor\ckeditor.pack" />
     <Content Include="Scripts\ckeditor\plugins\filebrowser\plugin.js" />
+    <Content Include="Scripts\ckeditor\plugins\gapscreator\dialogs\gapscreator.js" />
+    <Content Include="Scripts\ckeditor\plugins\gapscreator\icons\gaps.png" />
+    <Content Include="Scripts\ckeditor\plugins\gapscreator\plugin.js" />
     <Content Include="Scripts\ckeditor\plugins\imagebrowser\README.rst" />
     <Content Include="Scripts\ckeditor\plugins\popup\plugin.js" />
     <Content Include="Scripts\ckeditor\skins\moono\dev\locations.json" />
@@ -806,6 +813,9 @@
     <Content Include="Views\Admin\Career.cshtml" />
     <Content Include="Views\Admin\Careers.cshtml" />
     <Content Include="Views\Home\Career.cshtml" />
+    <Content Include="Views\Admin\Test.cshtml" />
+    <Content Include="Views\Admin\Tests.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Documents\" />

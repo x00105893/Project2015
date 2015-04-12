@@ -7,6 +7,7 @@ using ContactManager.Models;
 using System.IO;
 using NReco.VideoConverter;
 using System.Drawing;
+using Newtonsoft.Json;
 
 namespace ContactManager.Controllers
 {
@@ -15,14 +16,21 @@ namespace ContactManager.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        //
-        // GET: /Admin/test
-        
+        /// <summary>
+        /// Return view for Admin page
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             return View();
         }
 
+        #region Resources
+        /// <summary>
+        /// Return view for list of resources by type
+        /// </summary>
+        /// <param name="type">Name of resources type</param>
+        /// <returns></returns>
         public ActionResult Resources(String type)
         {
             if (type != null)
@@ -51,13 +59,19 @@ namespace ContactManager.Controllers
             }
         }
 
+        /// <summary>
+        /// Return view for editing or creating Resource entity
+        /// </summary>
+        /// <param name="id">Primary key for resource. Used for editing. For creating mode null</param>
+        /// <param name="type">Name of resource type</param>
+        /// <returns></returns>
         public ActionResult Resource(int? id, String type)
         {
             if (id.HasValue)
             {
                 var resource = db.Resources.Find(id.Value);
                 ViewBag.Type = resource.Type;
-                switch (resource.Type)
+                switch (resource.Type)                          // set title and filter for upload control by resource type
                 {
                     case ResourceType.Document:
                         ViewBag.Accept = "application/pdf";
@@ -105,6 +119,12 @@ namespace ContactManager.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Post action for saving resource
+        /// </summary>
+        /// <param name="model">Data from form</param>
+        /// <param name="file">File for resource</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Resource(Resource model, HttpPostedFileBase file)
         {
@@ -113,19 +133,18 @@ namespace ContactManager.Controllers
                 ResourceType resType = ResourceType.None;
                 if (model.ID == 0)
                 {
-                    if (file != null)
+                    if (file != null)                   // Create new resource
                     {
-                        string path = SaveFile(file, model.Type);
                         Resource resource = new Resource()
                         {
                             Name = model.Name,
                             Description = model.Description,
-                            RootPath = path,
                             Title = model.Title,
                             Type = model.Type,
                             UploadedBy = db.Users.ToList().FirstOrDefault(it => it.UserName == User.Identity.Name),
                             UploadedDate = DateTime.UtcNow
                         };
+                        resource.SaveFile(file);        // Save file for resource
                         db.Resources.Add(resource);
                         db.SaveChanges();
                         resType = resource.Type;
@@ -133,19 +152,17 @@ namespace ContactManager.Controllers
                     else
                         ModelState.AddModelError("", "Please, choose a file for upload.");
                 }
-                else
-                { 
+                else                                    // Update existing resource
+                {
                     Resource resource = db.Resources.Find(model.ID);
                     if (resource != null)
                     {
-                        string path = String.Empty;
                         if (file != null)
                         {
-                            DeleteFile(resource.RootPath);
-                            DeleteThumbnail(resource.RootPath);
-                            path = SaveFile(file, resource.Type);
+                            Helpers.DeleteFile(resource.RootPath);
+                            Helpers.DeleteThumbnail(resource.RootPath);
+                            resource.SaveFile(file);
                         }
-                        resource.RootPath = path;
                         resource.Name = model.Name;
                         resource.Description = model.Description;
                         resource.Title = model.Title;
@@ -157,11 +174,19 @@ namespace ContactManager.Controllers
                 }
                 if (resType != ResourceType.None)
                     return RedirectToAction("Resources", new { type = resType });
+                else
+                    return RedirectToAction("Index");
             }
 
             return View(model);
         }
 
+        /// <summary>
+        /// Delete resource by id
+        /// </summary>
+        /// <param name="id">Primary key for resource</param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public ActionResult DeleteResource(int? id, String type)
         {
             var res = db.Resources.Find(id);
@@ -169,142 +194,38 @@ namespace ContactManager.Controllers
             if (res != null)
             {
                 resType = res.Type;
-                DeleteFile(res.RootPath);
-                DeleteThumbnail(res.RootPath);
+                Helpers.DeleteFile(res.RootPath);
+                Helpers.DeleteThumbnail(res.RootPath);
                 db.Resources.Remove(res);
                 db.SaveChanges();
             }
             return RedirectToAction("Resources", new { type = resType });
         }
+        #endregion
 
-        private string SaveFile(HttpPostedFileBase file, ResourceType type)
-        {
-            string path = "~/Resources/";
-            switch (type)
-            { 
-                case ResourceType.Document:
-                    path += "Documents/";
-                    break;
-                case ResourceType.Image:
-                    path += "Images/";
-                    break;
-                case ResourceType.Video:
-                    path += "Video/";
-                    break;
-            }
-            CheckPath(path);
-            path += file.FileName.Insert(file.FileName.LastIndexOf('.'), DateTime.UtcNow.Ticks.ToString());
-            file.SaveAs(Server.MapPath(path));
-            switch (type)
-            {
-                case ResourceType.Video:
-                    if (!Path.GetExtension(path).ToLower().Equals(".mp4"))
-                        ConvertVideoToMp4(ref path, file.FileName);
-                    SaveVideoThumbnail(path);
-                    break;
-                case ResourceType.Image:
-                    if (!Path.GetExtension(path).ToLower().Equals(".gif"))
-                        ConvertImageToJpeg(ref path, file.FileName);
-                    SaveImageThumbnail(path);
-                    break;
-            }
-            return path;
-        }
-
-        private void ConvertVideoToMp4(ref string path, string fileName)
-        {
-            var ffMpeg = new FFMpegConverter();
-            string newPath = Path.GetDirectoryName(path) + "\\"
-                + Path.GetFileNameWithoutExtension(fileName) + DateTime.UtcNow.Ticks.ToString() + ".mp4";
-            ffMpeg.ConvertMedia(Server.MapPath(path), Server.MapPath(newPath), "mp4");
-            System.IO.File.Delete(Server.MapPath(path));
-            path = newPath;
-        }
-
-        private void ConvertImageToJpeg(ref string path, string fileName)
-        {
-            Image image = Image.FromFile(Server.MapPath(path));
-            string newPath = Path.GetDirectoryName(path) + "\\"
-                + Path.GetFileNameWithoutExtension(fileName) + DateTime.UtcNow.Ticks.ToString() + ".jpeg";
-            image.Save(Server.MapPath(newPath), System.Drawing.Imaging.ImageFormat.Jpeg);
-            image.Dispose();
-            System.IO.File.Delete(Server.MapPath(path));
-            path = newPath;
-        }
-
-        private void SaveVideoThumbnail(string path)
-        {
-            var ffMpeg = new FFMpegConverter();
-            string imagePath = Path.GetDirectoryName(path) + "\\Thumbs\\" + Path.GetFileNameWithoutExtension(path) + ".jpeg";
-            CheckPath(imagePath);
-            ffMpeg.GetVideoThumbnail(Server.MapPath(path), Server.MapPath(imagePath));
-        }
-
-        private void SaveImageThumbnail(string path)
-        {
-            Image image = Image.FromFile(Server.MapPath(path));
-            string imagePath = Path.GetDirectoryName(path) + "\\Thumbs\\" + Path.GetFileName(path);
-            CheckPath(imagePath);
-            Size thumbnailSize = GetThumbnailSize(image);
-            Image thumb = image.GetThumbnailImage(thumbnailSize.Width, thumbnailSize.Height, null, IntPtr.Zero);
-            thumb.Save(Server.MapPath(imagePath));
-            image.Dispose();
-            thumb.Dispose();
-        }
-
-        static Size GetThumbnailSize(Image original)
-        {
-            const int maxPixels = 200;
-
-            int originalWidth = original.Width;
-            int originalHeight = original.Height;
-
-            double factor;
-            if (originalWidth > originalHeight)
-            {
-                factor = (double)maxPixels / originalWidth;
-            }
-            else
-            {
-                factor = (double)maxPixels / originalHeight;
-            }
-
-            return new Size((int)(originalWidth * factor), (int)(originalHeight * factor));
-        }
-
-        private void DeleteFile(string path)
-        {
-            if (System.IO.File.Exists(Server.MapPath(path)))
-                System.IO.File.Delete(Server.MapPath(path));
-        }
-
-        private void DeleteThumbnail(string path)
-        {
-            if (System.IO.File.Exists(Server.MapPath(Path.GetDirectoryName(path) + "\\Thumbs\\" + Path.GetFileName(path))))
-                System.IO.File.Delete(Server.MapPath(Path.GetDirectoryName(path) + "\\Thumbs\\" + Path.GetFileName(path)));
-        }
-
-        private void CheckPath(string path)
-        {
-            if (!Directory.Exists(Path.GetDirectoryName(Server.MapPath(path))))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(Server.MapPath(path)));
-            }
-        }
-
+        #region Careers
+        /// <summary>
+        /// Return View for list of careers
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Careers()
         {
             return View(db.Careers.ToList());
         }
 
+        /// <summary>
+        /// Return View for editing or creating career
+        /// </summary>
+        /// <param name="id">Primary key for career</param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult Career(int? id)
         {
-            MultiSelectList documents = new MultiSelectList(db.Resources.Where(it => it.Type == ResourceType.Document), "ID", "Name");
+            MultiSelectList documents = new MultiSelectList(db.Resources.Where(it => it.Type == ResourceType.Document), "ID", "Name");  // Get documets list
             ViewBag.Documents = documents;
             List<SelectListItem> videos = new List<SelectListItem>();
             videos.Add(new SelectListItem());
-            foreach (var video in db.Resources.Where(it=>it.Type == ResourceType.Video))
+            foreach (var video in db.Resources.Where(it => it.Type == ResourceType.Video))                // Get video list
             {
                 videos.Add(new SelectListItem() { Text = video.Name, Value = video.ID.ToString() });
             }
@@ -336,24 +257,22 @@ namespace ContactManager.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Save career data
+        /// </summary>
+        /// <param name="model">Data from form</param>
+        /// <param name="form">Form data collection</param>
+        /// <returns></returns>
         [HttpPost, ValidateInput(false)]
         public ActionResult Career(Career model, FormCollection form)
         {
             if (ModelState.IsValid)
             {
                 Career career = db.Careers.Find(model.ID);
-                if (career != null)
+                if (career != null)                             // Update existing career
                 {
-                    career.CareerPath = model.CareerPath;
-                    career.Description = model.Description;
-                    career.KeySkills = model.KeySkills;
-                    career.Name = model.Name;
-                    career.UseLinkForVideo = model.UseLinkForVideo;
-                    career.VideoLink = model.VideoLink;
-                    career.WhatDo = model.WhatDo;
-                    career.WhoHire = model.WhoHire;
+                    career.Update(career);
                     career.ModifiedBy = db.Users.ToList().FirstOrDefault(it => it.UserName == User.Identity.Name);
-                    career.ModifiedDate = DateTime.UtcNow;
                     if (!String.IsNullOrEmpty(form["VideoID"]))
                     {
                         var video = db.Resources.Find(Convert.ToInt32(form["VideoID"]));
@@ -364,14 +283,14 @@ namespace ContactManager.Controllers
                     {
                         career.Video = null;
                     }
-                    if(!String.IsNullOrEmpty(form["DocumentsID"]))
+                    if (!String.IsNullOrEmpty(form["DocumentsID"]))
                     {
                         career.Documents.Clear();
                         string[] ids = form["DocumentsID"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (string id in ids)
                         {
                             Resource res = db.Resources.Find(Convert.ToInt32(id));
-                            if (res != null) 
+                            if (res != null)
                                 career.Documents.Add(res);
                         }
                     }
@@ -382,20 +301,12 @@ namespace ContactManager.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Careers");
                 }
-                else
+                else                        // Create new career
                 {
-                    career = new Career()
+                    career = new Career(model)
                     {
-                        CareerPath = model.CareerPath,
-                        Description = model.Description,
-                        KeySkills = model.KeySkills,
-                        Name = model.Name,
-                        UseLinkForVideo = model.UseLinkForVideo,
-                        VideoLink = model.VideoLink,
-                        WhatDo = model.WhatDo,
-                        WhoHire = model.WhoHire,
                         ModifiedBy = db.Users.ToList().FirstOrDefault(it => it.UserName == User.Identity.Name),
-                        ModifiedDate = DateTime.UtcNow
+                        Documents = new List<Resource>()
                     };
                     if (!String.IsNullOrEmpty(form["VideoID"]))
                     {
@@ -421,6 +332,139 @@ namespace ContactManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Delete career by id
+        /// </summary>
+        /// <param name="id">Primary key for career</param>
+        /// <returns></returns>
+        public ActionResult DeleteCareer(int? id)
+        {
+            var career = db.Careers.Find(id);
+            if (career != null)
+            {
+                db.Careers.Remove(career);
+            }
+            return RedirectToAction("Careers");
+        }
+        #endregion
+
+        #region Tests
+        public ActionResult Tests()
+        {
+            return View(db.Tests.ToList());
+        }
+
+        [HttpGet]
+        public ActionResult Test(int? id)
+        {
+            List<SelectListItem> careers = new List<SelectListItem>();
+            careers.Add(new SelectListItem());
+            foreach (var career in db.Careers)
+            {
+                careers.Add(new SelectListItem() { Text = career.Name, Value = career.ID.ToString() });
+            }
+            ViewBag.Careers = careers;
+            if (id.HasValue)
+            {
+                var test = db.Tests.Find(id);
+                string g = JsonConvert.SerializeObject(test.Questions);
+                if (test != null)
+                {
+                    if(test.Career != null)
+                    {
+                        var career = careers.FirstOrDefault(it => it.Value == test.Career.ID.ToString());
+                        if (career != null)
+                            career.Selected = true;
+                        ViewBag.Careers = careers;
+                    }
+                    return View(test);
+                }
+            }
+            return View();
+        }
+
+        [HttpPost, ValidateInput(false)]
+        public ActionResult Test(Test model, FormCollection form)
+        {
+            if (model.ID != 0)
+            {
+                Test test = db.Tests.Find(model.ID);
+                test.Title = model.Title;
+                test.ModifiedDate = DateTime.UtcNow;
+                foreach (var question in test.Questions)
+                {
+                    db.QuestionsOptions.RemoveRange(question.Options);
+                }
+                db.Questions.RemoveRange(test.Questions);
+                test.Questions = GetQuestions(form["questions"]);
+                if (!String.IsNullOrEmpty(form["CareerID"]))
+                {
+                    var career = db.Careers.Find(Convert.ToInt32(form["CareerID"]));
+                    if (career != null)
+                        test.Career = career;
+                }
+                else
+                    test.Career = null;
+                db.SaveChanges();
+                return RedirectToAction("Tests");
+            }
+            else
+            {
+                Test test = new Test()
+                {
+                    Title = model.Title,
+                    ModifiedDate = DateTime.UtcNow
+                };
+                test.Questions = GetQuestions(form["questions"]);
+                if (!String.IsNullOrEmpty(form["CareerID"]))
+                {
+                    var career = db.Careers.Find(Convert.ToInt32(form["CareerID"]));
+                    if (career != null)
+                        test.Career = career;
+                }
+                db.Tests.Add(test);
+                db.SaveChanges();
+                return RedirectToAction("Tests");
+            }
+        }
+
+        private List<Question> GetQuestions(string questionsJSON)
+        {
+            List<Question> questionsList = new List<Question>();
+            dynamic questions = JsonConvert.DeserializeObject<List<Question>>(questionsJSON);
+            foreach (var question in questions)
+            {
+                if (question == null)
+                    continue;
+                Question q = new Question()
+                {
+                    Text = question.Text,
+                    HelpText = question.HelpText,
+                    Type = question.Type,
+                    Options = new List<QuestionOption>()
+                };
+                foreach (var option in question.Options)
+                {
+                    QuestionOption op = new QuestionOption()
+                    {
+                        Text = ((string)option.Text).Replace("\"","\\\""),
+                        IsRight = option.IsRight
+                    };
+                    q.Options.Add(op);
+                }
+                questionsList.Add(q);
+            }
+            return questionsList;
+        }
+
+        public ActionResult DeleteTest(int? id)
+        {
+            return RedirectToAction("Tests");
+        }
+        #endregion
+        /// <summary>
+        /// Class for imagebromser plugin used for preview images
+        /// </summary>
         public class ImagesJson
         {
             public string image { get; set; }
@@ -429,6 +473,11 @@ namespace ContactManager.Controllers
 
             public string folder { get; set; }
         }
+
+        /// <summary>
+        /// Return list of ImageJson for preview
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Images()
         {
             List<ImagesJson> images = new List<ImagesJson>();

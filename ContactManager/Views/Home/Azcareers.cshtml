@@ -10,26 +10,38 @@
             <h2>A-Z Careers</h2>
         </div>
     </div>
-    @foreach (ContactManager.Models.Career item in Model)
-    {
-        <div class="col-sm-4">
-            <span><a href="@Url.Action("Career", new { id = item.ID })">@item.Name</a></span>
-            <p>@item.Description</p>
+    <div class="col-md-3">
+        <ul class="nav nav-pills nav-stacked">
+            @if(ViewBag.ActiveLetter == "All")
+            {
+                <li role="presentation" class="active"><a href="#All">All <span class="badge">@Model.Count()</span></a></li>
+            }
+            else
+            {
+                <li role="presentation"><a href="@Url.Action("Azcareers", new { id = "All" })">All <span class="badge">@Model.Count()</span></a></li>
+            }
+            @foreach (var letter in ViewBag.Letters)
+            {
+                if(ViewBag.ActiveLetter == letter.Key)
+                { 
+                    <li role="presentation" class="active"><a href="@letter.Key">@letter.Key <span class="badge">@letter.Value</span></a></li>
+                }
+                else
+                {
+                    <li role="presentation"><a href="@Url.Action("Azcareers", new { id = letter.Key })">@letter.Key <span class="badge">@letter.Value</span></a></li>
+                }
+            }
+        </ul>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            @foreach (ContactManager.Models.Career item in Model)
+            {
+                <div class="col-md-3">
+                    <span><a href="@Url.Action("Career", new { id = item.ID })">@item.Name</a></span>
+                    <p>@item.Description</p>
+                </div>
+            }
         </div>
-    }
-    <div class="col-sm-4">
-        <h3>A</h3>
-        <span><a href="#">Accountants and auditors</a></span>
-        <p>Accountants and auditors work with financial information. They gather data, make sure it's accurate, study it, and create reports. The four major accounting fields are public, management, government and internal auditing.</p>
-    </div>
-    <div class="col-sm-4">
-        <h3>B</h3>
-        <span><a href="#">Broadcast technicians</a></span>
-        <p>Broadcast technicians record and broadcast radio and television programs. They work with electrical equipment, adjusting the picture and sound of the broadcast to ensure clarity for viewers.</p>
-    </div>
-    <div class="col-sm-4">
-        <h3>C</h3>
-        <span><a href="#">Computer programmers</a></span>
-        <p>Computer programmers create and test computer programs that store, find or retrieve data and documents.</p>
     </div>
 </div><!-- class row one-->

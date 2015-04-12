@@ -19,8 +19,8 @@ namespace ContactManager
         }
 
         protected void Application_Error()
-        { 
-            
+        {
+            Logger.DebugError(Server.GetLastError());
         }
     }
 }

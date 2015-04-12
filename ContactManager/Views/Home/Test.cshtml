@@ -1,0 +1,142 @@
+﻿@model ContactManager.Models.Test
+@{
+    ViewBag.Title = Model.Title;
+}
+<style>
+    .gaps-input{
+        display:inline;
+    }
+    .ok-answer{
+        background-color: lightgreen;
+    }
+    .wrong-answer{
+        background-color: lightcoral;
+    }
+    .option{
+        display:inline;
+        margin: 0 15px 0 20px;
+    }
+</style>
+<h2>@Model.Title</h2>
+<div class="form-horizontal">
+    @for (int j = 0; j < Model.Questions.Count; j++)
+    {
+        var question = Model.Questions.ToArray()[j];
+        <div class="form-group-lg question" style="display:none">
+            <label class="control-label">@((j+1).ToString() + ". "+ question.Text)</label>
+            <label>@question.HelpText</label>
+            <p></p>
+            @switch (question.Type)
+            {
+                case ContactManager.Models.QuestionType.Text:
+                    <div class="text-left">
+                        <input type="hidden" value="text" />
+                        @Html.Raw(question.Options.ToArray()[0].Text)
+                        <div class="btn btn-default check-question">Check question</div> 
+                    </div>
+                    break;
+                case ContactManager.Models.QuestionType.Radio:
+                    <div>
+                        <input type="hidden" value="radio" />
+                        @for(int i = 0; i < question.Options.Count; i++)
+                        {
+                            var option = question.Options.ToArray()[i];
+                            <div>
+                                <strong>@(i+1).</strong>
+                                <div class="option">
+                                    <input type="radio" id="@(question.ID + "_" + @option.ID)" name="@question.ID" value="@option.ID" data-isright="@option.IsRight" />
+                                    <label for="@(question.ID + "_" + @option.ID)">@option.Text</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="btn btn-default check-question">Check question</div>
+                    </div>
+                    break;
+                case ContactManager.Models.QuestionType.Checkbox:
+                    <div>
+                        <input type="hidden" value="checkbox" />
+                        @for(int i = 0; i < question.Options.Count; i++)
+                        {
+                            var option = question.Options.ToArray()[i];
+                            <div>
+                                <strong>@(i + 1).</strong>
+                                <div class="option">
+                                    <input type="checkbox" id="@(question.ID + "_" + @option.ID)" name="@question.ID" value="@option.ID" data-isright="@option.IsRight" />
+                                    <label for="@(question.ID + "_" + @option.ID)">@option.Text</label>
+                                </div>
+                            </div>
+                        }
+                        <div class="btn btn-default check-question">Check question</div>
+                    </div>
+                    break;
+            }
+            <div>
+
+            </div>
+        </div>
+    }
+    <span class="ok glyphicon glyphicon-ok-circle" style="display:none; font-size:20px;"></span>
+    <span class="wrong glyphicon glyphicon-remove-circle" style="display: none; font-size: 20px;"></span>
+</div>
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".text-left").each(function (index, element) {
+                $(element).find(".gaps").each(function (i, e) {
+                    $(e).before("<input class='gaps-input' type='text' title='" + $(e).prop('title') + "' data-answer='" + $(e).text() + "' style='margin: 0 10px 0 10px' />");
+                    $(e).remove();
+                });
+            });
+        });
+        $(".question").show();
+        $(".check-question").click(function () {
+            var type = $(this).parent().find("input:hidden").val();
+            $(this).parent().find(".glyphicon").remove();
+            switch (type) {
+                case "text":
+                    $(this).parent().find(".gaps-input").each(function (index, element) {
+                        $(element).removeClass("ok-answer").removeClass("wrong-answer");
+                        var rightValue = $(element).attr("data-answer");
+                        if (rightValue.trim() == $(element).val().trim()) {
+                            $(element).addClass("ok-answer").after($(".ok").clone().removeClass("ok").show());
+                        }
+                        else {
+                            $(element).val(rightValue).addClass("wrong-answer").after($(".wrong").clone().removeClass("wrong").show());
+                        }
+                    });
+                    break;
+                case "checkbox":
+                case "radio":
+                    var selectedCount = 0;
+                    $(this).parent().find(".option").each(function (index, element) {
+                        var selected = $(element).find("input").prop("checked");
+                        if (selected)
+                            selectedCount++;
+                    });
+
+                    if (selectedCount > 0) {
+                        $(this).parent().find(".option").each(function (index, element) {
+                            $(element).removeClass("ok-answer").removeClass("wrong-answer");
+                            var selected = $(element).find("input").prop("checked");
+                            var right = JSON.parse($(element).find("input").attr("data-isright").toLowerCase());
+                            if (right) {
+                                if(selected)
+                                    $(element).addClass("ok-answer").after($(".ok").clone().removeClass("ok").show());
+                                else
+                                    $(element).addClass("ok-answer").after($(".wrong").clone().removeClass("wrong").show());
+                            }
+                            else if (selected) {
+                                $(element).addClass("wrong-answer").after($(".wrong").clone().removeClass("wrong").show());
+                            }
+                        });
+                    }
+                    else {
+                        alert("Please select at least one value from list.")
+                    }
+                    break;
+            }
+        });
+    </script>
+}
+

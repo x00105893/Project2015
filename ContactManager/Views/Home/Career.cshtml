@@ -3,28 +3,73 @@
 @{
     ViewBag.Title = @Model.Name;
 }
+<style>
+    .panel-heading a:after {
+        font-family: 'Glyphicons Halflings';
+        content: "\e114";
+        float: right;
+        color: grey;
+    }
 
+    .panel-heading a.collapsed:after {
+        content: "\e080";
+    }
+</style>
 <h2>@Model.Name</h2>
 
 <div class="career">
     <div class="row">
         <div class="col-md-4">
             <div>
-                <div>
-                    <h4 class="panel-heading">Documents</h4>
-                    @if (Model.Documents.Count() != 0)
-                    {
-                        <div class="panel-body">
-                            @foreach (var doc in Model.Documents)
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-target="#collapseOne" class="collapsed" style="cursor:pointer">
+                                    Documents
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse">
+                            @if (Model.Documents.Count() != 0)
                             {
-                                <div>@Html.ActionLink(doc.Name, "Download", "File", routeValues: new { id = doc.ID }, htmlAttributes: new { })</div>
+                                <div class="panel-body">
+                                    @foreach (var doc in Model.Documents)
+                                    {
+                                        <div>@Html.ActionLink(doc.Name, "Download", "File", routeValues: new { id = doc.ID }, htmlAttributes: new { })</div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="panel-body">No documents</p>
                             }
                         </div>
-                    }
-                    else
-                    {
-                        <p class="panel-body">No documents</p>
-                    }
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-target="#collapseTwo" class="collapsed" style="cursor:pointer">
+                                    Tests
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            @if (Model.Tests.Count() != 0)
+                            {
+                                <div class="panel-body">
+                                    @foreach (var test in Model.Tests)
+                                    {
+                                        <div>@Html.ActionLink(test.Title, "Test", "Home", routeValues: new { id = test.ID }, htmlAttributes: new { })</div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="panel-body">No documents</p>
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h4 class="panel-heading">
@@ -37,7 +82,10 @@
             </div>
         </div>
         <div class="col-md-8">
-            <div id="video"></div>
+            @if ((Model.UseLinkForVideo && !String.IsNullOrEmpty(Model.VideoLink)) || Model.Video != null)
+            { 
+                <div id="video"></div>
+            }
         </div>
     </div>
     <div class="row">

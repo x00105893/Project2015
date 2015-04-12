@@ -31,6 +31,8 @@ namespace ContactManager.Models
 
         public virtual ICollection<Resource> Documents { get; set; }
 
+        public virtual ICollection<Test> Tests { get; set; }
+
         public bool UseLinkForVideo { get; set; }
 
         [StringLength(512)]
@@ -41,5 +43,33 @@ namespace ContactManager.Models
         public DateTime ModifiedDate { get; set; }
 
         public virtual ApplicationUser ModifiedBy { get; set; }
+
+        public Career() { }
+
+        public Career(Career career)
+        {
+            CareerPath = career.CareerPath;
+            Description = career.Description;
+            KeySkills = career.KeySkills;
+            Name = career.Name;
+            UseLinkForVideo = career.UseLinkForVideo;
+            VideoLink = career.VideoLink;
+            WhatDo = career.WhatDo;
+            WhoHire = career.WhoHire;
+            ModifiedDate = DateTime.UtcNow;
+        }
+
+        public void Update(Career career)
+        {
+            CareerPath = career.CareerPath;
+            Description = career.Description;
+            KeySkills = career.KeySkills;
+            Name = career.Name;
+            UseLinkForVideo = career.UseLinkForVideo;
+            VideoLink = career.VideoLink;
+            WhatDo = career.WhatDo;
+            WhoHire = career.WhoHire;
+            ModifiedDate = DateTime.UtcNow;
+        }
     }
 }

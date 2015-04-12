@@ -54,9 +54,33 @@ namespace ContactManager.Controllers
             return View();
         }
         [AllowAnonymous]
-        public ActionResult Azcareers()
+        public ActionResult Azcareers(string id)
         {
             ViewBag.Message = "Your a-z careers page.";
+            Dictionary<string, int> letters = new Dictionary<string, int>();
+            foreach (Career career in db.Careers)
+            {
+                string firstLetter = career.Name.Substring(0, 1);
+                if(!letters.ContainsKey(firstLetter.ToUpper()))
+                {
+                    letters.Add(firstLetter.ToUpper(), 1);
+                }
+                else
+                {
+                    letters[firstLetter.ToUpper()]++;
+                }
+            }
+            ViewBag.ActiveLetter = "All";
+            ViewBag.Letters = letters;
+            if (!String.IsNullOrEmpty(id) && letters.ContainsKey(id.ToUpper()))
+            {
+                ViewBag.ActiveLetter = id.ToUpper();
+                return View(db.Careers.Where(it => it.Name.ToLower().StartsWith(id.ToLower())).OrderBy(it => it.Name));
+            }
+            else if (String.IsNullOrEmpty(id) || id.ToLower().Equals("all"))
+            {
+                return View(db.Careers.OrderBy(it => it.Name));                
+            }
 
             return View(db.Careers.OrderBy(it=>it.Name));
         }
@@ -83,6 +107,27 @@ namespace ContactManager.Controllers
             {
                 return RedirectToAction("Azcareers");
             }
+        }
+
+        [AllowAnonymous]
+        public ActionResult Test(int? id)
+        {
+            if(id.HasValue)
+            {
+                var test = db.Tests.Find(id);
+                if (test != null)
+                {
+                    foreach (var question in test.Questions)
+                    {
+                        foreach (var option in question.Options)
+                        {
+                            option.Text = option.Text.Replace("\\\"", "\"");
+                        }
+                    }
+                }
+                    return View(test);
+            }
+            return RedirectToAction("Index");
         }
     }
 }
