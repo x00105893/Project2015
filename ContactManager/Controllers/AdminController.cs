@@ -271,7 +271,7 @@ namespace ContactManager.Controllers
                 Career career = db.Careers.Find(model.ID);
                 if (career != null)                             // Update existing career
                 {
-                    career.Update(career);
+                    career.Update(model);
                     career.ModifiedBy = db.Users.ToList().FirstOrDefault(it => it.UserName == User.Identity.Name);
                     if (!String.IsNullOrEmpty(form["VideoID"]))
                     {
