@@ -11,28 +11,29 @@ namespace ContactManager.Models
         [Key]
         public int ID { get; set; }
 
-        [Required, StringLength(512)]
+        [Required, StringLength(512), Display(Name="Name of Career")]
         public string Name { get; set; }
 
         [Required, StringLength(2048), DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-        [StringLength(4096)]
+        [StringLength(4096), Display(Name="What does he do?")]
         public string WhatDo { get; set; }
 
-        [StringLength(4096)]
+        [StringLength(4096), Display(Name="Who hire them?")]
         public string WhoHire { get; set; }
 
-        [StringLength(4096)]
+        [StringLength(4096), Display(Name="Key skills")]
         public string KeySkills { get; set; }
 
-        [StringLength(4096)]
+        [StringLength(4096), Display(Name="Career Path")]
         public string CareerPath { get; set; }
 
         public virtual ICollection<Resource> Documents { get; set; }
 
         public virtual ICollection<Test> Tests { get; set; }
 
+        [Display(Name="Use link for video")]
         public bool UseLinkForVideo { get; set; }
 
         [StringLength(512)]

@@ -367,7 +367,6 @@ namespace ContactManager.Controllers
             if (id.HasValue)
             {
                 var test = db.Tests.Find(id);
-                string g = JsonConvert.SerializeObject(test.Questions);
                 if (test != null)
                 {
                     if(test.Career != null)
@@ -383,6 +382,12 @@ namespace ContactManager.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Save test data
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost, ValidateInput(false)]
         public ActionResult Test(Test model, FormCollection form)
         {
@@ -428,6 +433,11 @@ namespace ContactManager.Controllers
             }
         }
 
+        /// <summary>
+        /// Parse json string
+        /// </summary>
+        /// <param name="questionsJSON">Json of qiestions</param>
+        /// <returns></returns>
         private List<Question> GetQuestions(string questionsJSON)
         {
             List<Question> questionsList = new List<Question>();

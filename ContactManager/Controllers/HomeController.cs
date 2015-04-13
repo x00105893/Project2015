@@ -71,7 +71,7 @@ namespace ContactManager.Controllers
                 }
             }
             ViewBag.ActiveLetter = "All";
-            ViewBag.Letters = letters;
+            ViewBag.Letters = letters.OrderBy(it => it.Key);
             if (!String.IsNullOrEmpty(id) && letters.ContainsKey(id.ToUpper()))
             {
                 ViewBag.ActiveLetter = id.ToUpper();

@@ -94,7 +94,7 @@
 </div>
 
 <div class="option base-option-checkbox" style="display:none">
-    <div class="move-option" style="display:inline; cursor:move">
+    <div class="move-option" style="display:inline; cursor:default">
         <span class="glyphicon glyphicon-option-vertical"></span>
     </div>
     <div style="display:inline">
@@ -109,7 +109,7 @@
 </div>
 
 <div class="option base-option-radio" style="display:none">
-    <div class="move-option" style="display:inline; cursor:move">
+    <div class="move-option" style="display:inline; cursor:default">
         <span class="glyphicon glyphicon-option-vertical"></span>
     </div>
     <div style="display:inline">
@@ -125,7 +125,7 @@
 
 <div class="question base-question" style="padding:10px; cursor:default; width:750px; text-align:left; display:none">
     <input type="hidden" />
-    <div class="move-question" style="display:inline; cursor:move">
+    <div class="move-question" style="display:inline; cursor:default">
         <span class="glyphicon glyphicon-option-vertical"></span>
     </div>
     <div style="display:inline">
@@ -335,6 +335,7 @@
                     $(this).parent().remove();
             });
 
+            //Event onclick for edit button
             $(".edit-question").click(function () {
                 EditQuestion($(this).parent().parent().find("input[type=hidden]").val());
             });
@@ -458,7 +459,7 @@
                 }
             }
         }
-
+        //Get question by id
         function GetQuestion(id) {
             if (questions && questions.length != 0) {
                 for (var i = 0; i < questions.length; i++) {
@@ -574,22 +575,6 @@
             modal.find("#HelpText").val("");
             modal.find(".option").remove();
         });
-
-        $.fn.serializeObject = function () {
-            var o = {};
-            var a = this.serializeArray();
-            $.each(a, function () {
-                if (o[this.name] !== undefined) {
-                    if (!o[this.name].push) {
-                        o[this.name] = [o[this.name]];
-                    }
-                    o[this.name].push(this.value || '');
-                } else {
-                    o[this.name] = this.value || '';
-                }
-            });
-            return o;
-        };
 
         $.fn.modal.Constructor.prototype.enforceFocus = function () {
             modal_this = this
