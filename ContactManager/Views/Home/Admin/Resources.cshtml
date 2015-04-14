@@ -1,0 +1,82 @@
+﻿@model IEnumerable<ContactManager.Models.Resource>
+
+<h2>@ViewBag.Title</h2>
+
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index")">Admin</a></li>
+    <li class="active">@ViewBag.Title</li>
+</ol>
+
+<input type="hidden" value="@ViewBag.Type" name="type" />
+<p>
+    @if ((ViewBag.Type as ContactManager.Models.ResourceType?) != ContactManager.Models.ResourceType.None)
+    {
+        @Html.ActionLink("Add " + ((ContactManager.Models.ResourceType)ViewBag.Type).ToString(), "Resource", new { type = ViewBag.Type })
+    }
+</p>
+<div class="panel panel-default">
+    @if (Model.Count() != 0)
+    {
+        <div id="grid">
+            @{
+            var grid = new WebGrid(Model, ajaxUpdateContainerId: "grid", canPage: true, canSort: true);
+            }
+            @grid.GetHtml(tableStyle: "table",
+                columns: grid.Columns(
+                        grid.Column(format: (item) => @Html.ActionLink("Edit", "Resource", new { id = item.ID }), canSort: false),
+                        grid.Column(format: (item) => @Html.ActionLink("Delete", "DeleteResource", new { id = item.ID }), canSort: false),
+                        grid.Column("Title", "Title"),
+                        grid.Column("Name", "Name"),
+                        grid.Column("UploadedDate", "Modified date"),
+                        grid.Column(format: (item) => @Html.ActionLink("Download", "Download", "File", routeValues: new { id = item.ID }, htmlAttributes: new { }), canSort: false)))
+        </div>
+    }
+    else
+    {
+        <p>
+            No resources.
+        </p>
+    }
+</div>
+<div id="dialog-message" title="Error">
+    <div id="message" class="dialog-message"></div>
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryui", "~/bundles/webgrid")
+    <script>
+        $(document).ready(function () {
+            $("#dialog-message").dialog({
+                resizable: false,
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    Ok: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+
+        function OpenDialog(text) {
+            $("#dialog-message #message").text(text);
+            $("#dialog-message").dialog("open");
+        }
+
+        function Download(id) {
+            var iframe = $("<iframe/>").load(function () {
+                if ($(this).contents().find('body') && $(this).contents().find('body').text())
+                    OpenDialog($(this).contents().find('body').text())
+                else {
+                    if(!isFirefox)
+                        OpenDialog('Error occured while file downloading.');
+                }
+            }).attr({
+                target: "_blank",
+                src: "/File/Download?id="+id,
+                style: "display: none"
+            }).appendTo($('body'));
+        }
+    </script>
+}

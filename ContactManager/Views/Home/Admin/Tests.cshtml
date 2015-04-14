@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ContactManager.Models.Test>
+@{
+    ViewBag.Title = "Tests";
+}
+
+<h2>Tests</h2>
+<ol class="breadcrumb">
+    <li><a href="@Url.Action("Index")">Admin</a></li>
+    <li class="active">Tests</li>
+</ol>
+<p>
+    @Html.ActionLink("Add Test", "Test")
+</p>
+<div class="panel panel-default">
+    @if (Model.Count() != 0)
+    {
+        <div id="grid">
+            @{
+                var grid = new WebGrid(Model, ajaxUpdateContainerId: "grid", canPage: true, canSort: true);
+            }
+            @grid.GetHtml(tableStyle: "table",
+                columns: grid.Columns(
+                         grid.Column(format: (item) => @Html.ActionLink("Edit", "Test", new { id = item.ID }), canSort: false),
+                         grid.Column(format: (item) => @Html.ActionLink("Delete", "DeleteTest", new { id = item.ID }), canSort: false),
+                         grid.Column("Title", "Title"),
+                         grid.Column("ModifiedDate", "Modified date")))
+        </div>
+    }
+    else
+    {
+        <p>
+            No test.
+        </p>
+    }
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryui", "~/bundles/webgrid")
+}
