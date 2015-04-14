@@ -46,11 +46,13 @@
         <div class="container body-content">
             @RenderBody()
             <hr />
-            <div id="footer" class="navbar-default">
-                <div align="center">
-                    &copy; @DateTime.Now.Year - This site was created as a third year project by students from <a href="http://www.it-tallaght.ie/computing">IT Tallaght</a>
+            <footer>
+                <div class="container">
+                    <div align="center">
+                        &copy; @DateTime.Now.Year - This site was created as a third year project by students from <a href="http://www.it-tallaght.ie/computing">IT Tallaght</a>
+                    </div>
                 </div>
-            </div>
+            </footer>
         </div>
 
         @Scripts.Render("~/bundles/jquery")
