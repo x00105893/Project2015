@@ -1,7 +1,67 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Admin";
 }
 
 <h2>Admin</h2>
 
+<div class="panel panel-default">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>
+                    Documents (PDF)
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "Resource", new { type = ContactManager.Models.ResourceType.Document })
+                </td>
+                <td>
+                    @Html.ActionLink("Change", "Resources", new { type = ContactManager.Models.ResourceType.Document })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Video
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "Resource", new { type = ContactManager.Models.ResourceType.Video })
+                </td>
+                <td>
+                    @Html.ActionLink("Change", "Resources", new { type = ContactManager.Models.ResourceType.Video })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Images
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "Resource", new { type = ContactManager.Models.ResourceType.Image })
+                </td>
+                <td>
+                    @Html.ActionLink("Change", "Resources", new { type = ContactManager.Models.ResourceType.Image })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Careers
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "Career")
+                </td>
+                <td>
+                    @Html.ActionLink("Change", "Careers", "Admin")
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Tests
+                </td>
+                <td>
+                    @Html.ActionLink("Add", "Test")
+                </td>
+                <td>
+                    @Html.ActionLink("Change", "Tests")
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -816,6 +816,13 @@
     <Content Include="Views\Admin\Test.cshtml" />
     <Content Include="Views\Admin\Tests.cshtml" />
     <Content Include="Views\Home\Test.cshtml" />
+    <Content Include="Views\Home\Admin\Career.cshtml" />
+    <Content Include="Views\Home\Admin\Careers.cshtml" />
+    <Content Include="Views\Home\Admin\Index.cshtml" />
+    <Content Include="Views\Home\Admin\Resource.cshtml" />
+    <Content Include="Views\Home\Admin\Resources.cshtml" />
+    <Content Include="Views\Home\Admin\Test.cshtml" />
+    <Content Include="Views\Home\Admin\Tests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Documents\" />
