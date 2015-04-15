@@ -343,6 +343,7 @@ namespace ContactManager.Controllers
             if (career != null)
             {
                 db.Careers.Remove(career);
+                db.SaveChanges();
             }
             return RedirectToAction("Careers");
         }
@@ -469,6 +470,12 @@ namespace ContactManager.Controllers
 
         public ActionResult DeleteTest(int? id)
         {
+            var test = db.Tests.Find(id);
+            if (test != null)
+            {
+                db.Tests.Remove(test);
+                db.SaveChanges();
+            }
             return RedirectToAction("Tests");
         }
         #endregion
