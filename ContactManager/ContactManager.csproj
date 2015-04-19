@@ -343,7 +343,6 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-chosen.scss" />
     <Content Include="Content\bootstrap-chosen.less" />
-    <None Include="Properties\PublishProfiles\iteration1.pubxml" />
     <Content Include="Scripts\chosen.jquery.js" />
     <Content Include="Scripts\chosen.jquery.min.js" />
     <Content Include="Scripts\ckeditor\adapters\jquery.js" />
@@ -365,6 +364,7 @@
     <Content Include="Scripts\ckeditor\plugins\popup\plugin.js" />
     <Content Include="Scripts\ckeditor\skins\moono\dev\locations.json" />
     <Content Include="Scripts\ckeditor\skins\moono\readme.md" />
+    <None Include="Properties\PublishProfiles\careerstartingearly.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\ckeditor\ckeditor_source.js" />
     <Content Include="Scripts\ckeditor\config.js" />
