@@ -37,9 +37,9 @@ namespace ContactManager.Migrations
 
         protected override void Seed(ContactManager.Models.ApplicationDbContext context)
         {
-            AddUserAndRole(context);
+           AddUserAndRole(context);
             context.Contacts.AddOrUpdate(p => p.Name,
-               new Contact
+              new Contact
                {
                    Name = "Debra Garcia",
                    Address = "1234 Main St",

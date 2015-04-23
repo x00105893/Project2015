@@ -237,13 +237,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201503061315067_InitialCreate.cs" />
-    <Compile Include="Migrations\201503061315067_InitialCreate.Designer.cs">
-      <DependentUpon>201503061315067_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201504231648342_InitialCreate1.cs" />
+    <Compile Include="Migrations\201504231648342_InitialCreate1.Designer.cs">
+      <DependentUpon>201504231648342_InitialCreate1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201503061430284_Initial.cs" />
-    <Compile Include="Migrations\201503061430284_Initial.Designer.cs">
-      <DependentUpon>201503061430284_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201504232204024_InitialCreate.cs" />
+    <Compile Include="Migrations\201504232204024_InitialCreate.Designer.cs">
+      <DependentUpon>201504232204024_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -343,6 +343,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-chosen.scss" />
     <Content Include="Content\bootstrap-chosen.less" />
+    <None Include="Properties\PublishProfiles\careerchoicesstartingearly.pubxml" />
     <None Include="Properties\PublishProfiles\iteration1.pubxml" />
     <Content Include="Scripts\chosen.jquery.js" />
     <Content Include="Scripts\chosen.jquery.min.js" />
@@ -835,11 +836,11 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201503061315067_InitialCreate.resx">
-      <DependentUpon>201503061315067_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201504231648342_InitialCreate1.resx">
+      <DependentUpon>201504231648342_InitialCreate1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201503061430284_Initial.resx">
-      <DependentUpon>201503061430284_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201504232204024_InitialCreate.resx">
+      <DependentUpon>201504232204024_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
